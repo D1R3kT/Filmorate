@@ -20,7 +20,7 @@ import java.util.HashMap;
 @Slf4j
 public class FilmController {
     HashMap<Long, Film> storage = new HashMap<>();
-    final LocalDate FILM_BIRTHDAY = LocalDate.of(1985, 12, 28);
+    private static final LocalDate FILM_BIRTHDAY = LocalDate.of(1985, 12, 28);
     Long id = 0L;
 
     public Long createId(){
@@ -28,7 +28,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> getAll(){
+    public Collection<Film> getAll() {
         log.info("get all Films: {}", storage.values());
         return storage.values();
     }
@@ -49,19 +49,19 @@ public class FilmController {
 
     @PutMapping
     @Validated(Marker.OnUpdate.class)
-    public Film update(@RequestBody @Valid Film film){
-        if (storage.containsKey(film.getId())){
+    public Film update(@RequestBody @Valid Film film) {
+        if (storage.containsKey(film.getId())) {
             Film oldFilm = storage.get(film.getId());
-            if (film.getName() != null && !film.getName().isBlank()){
+            if (film.getName() != null && !film.getName().isBlank()) {
                 oldFilm.setName(film.getName());
             }
-            if (film.getDescription() != null && !film.getDescription().isBlank()){
+            if (film.getDescription() != null && !film.getDescription().isBlank()) {
                 oldFilm.setDescription(film.getDescription());
             }
-            if (film.getDuration() != null && film.getDuration() > 0){
+            if (film.getDuration() != null && film.getDuration() > 0) {
                 oldFilm.setDuration(film.getDuration());
             }
-            if (film.getReleaseDate() != null && !isValidReleaseDate(film.getReleaseDate())){
+            if (film.getReleaseDate() != null && !isValidReleaseDate(film.getReleaseDate())) {
                 oldFilm.setReleaseDate(film.getReleaseDate());
             }
             log.info("update Film : {} - Finished", oldFilm);
