@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> getAll(){
+    public Collection<User> getAll() {
         log.info("get all Users: {}", storage.values());
         return storage.values();
     }
@@ -36,7 +36,7 @@ public class UserController {
     public User create(@RequestBody @Valid User user) {
         log.info("create User: {} - Started", user);
         user.setId(createId());
-        if(user.getName() == null) {
+        if (user.getName() == null) {
             user.setName(user.getLogin());
         }
         storage.put(user.getId(), user);
