@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exceptions.ConditionsMetException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,12 +20,11 @@ import java.util.HashMap;
 @Slf4j
 public class FilmController {
     HashMap<Long, Film> storage = new HashMap<>();
-    LocalDate FILM_BIRTHDAY = LocalDate.of(1985, 12, 28);
+    final LocalDate FILM_BIRTHDAY = LocalDate.of(1985, 12, 28);
     Long id = 0L;
 
     public Long createId(){
         return ++id;
-
     }
 
     @GetMapping
@@ -51,19 +49,19 @@ public class FilmController {
 
     @PutMapping
     @Validated(Marker.OnUpdate.class)
-    public Film update(@RequestBody @Valid Film film) {
-        if (storage.containsKey(film.getId())) {
+    public Film update(@RequestBody @Valid Film film){
+        if (storage.containsKey(film.getId())){
             Film oldFilm = storage.get(film.getId());
-            if (film.getName() != null && !film.getName().isBlank()) {
+            if (film.getName() != null && !film.getName().isBlank()){
                 oldFilm.setName(film.getName());
             }
-            if (film.getDescription() != null && !film.getDescription().isBlank()) {
+            if (film.getDescription() != null && !film.getDescription().isBlank()){
                 oldFilm.setDescription(film.getDescription());
             }
-            if (film.getDuration() != null && film.getDuration() > 0) {
+            if (film.getDuration() != null && film.getDuration() > 0){
                 oldFilm.setDuration(film.getDuration());
             }
-            if (film.getReleaseDate() != null && !isValidReleaseDate(film.getReleaseDate())) {
+            if (film.getReleaseDate() != null && !isValidReleaseDate(film.getReleaseDate())){
                 oldFilm.setReleaseDate(film.getReleaseDate());
             }
             log.info("update Film : {} - Finished", oldFilm);
