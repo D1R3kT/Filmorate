@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import ru.yandex.practicum.filmorate.Marker;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,4 +24,6 @@ public class Film {
     LocalDate releaseDate;
     @Positive
     Long duration;
+    Mpa mpa;
+    Collection<Genre> genres;
 }
