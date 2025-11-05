@@ -1,73 +1,58 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.Marker;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserRepository;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
-@Validated
-@Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    HashMap<Long, User> storage = new HashMap<>();
-
-    Long id = 0L;
-
-    public Long createId() {
-        ++id;
-        return id;
-    }
+    private final UserService userService;
+    private final InMemoryUserRepository userRepository;
 
     @GetMapping
     public Collection<User> getAll() {
-        log.info("get all Users: {}", storage.values());
-        return storage.values();
+        return userRepository.getAll();
     }
 
     @PostMapping
-    @Validated(Marker.OnCreate.class)
-    public User create(@RequestBody @Valid User user) {
-        log.info("create User: {} - Started", user);
-        user.setId(createId());
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        storage.put(user.getId(), user);
-        log.info("create User: {} - Finished", user);
-        return user;
+    public User createUser(@RequestBody User user) {
+        return userRepository.create(user);
     }
 
     @PutMapping
-    @Validated(Marker.OnUpdate.class)
-    public User update(@RequestBody @Valid User user) {
-        log.info("update user {} - Start", user);
-        if (storage.containsKey(user.getId())) {
-            User oldUser = storage.get(user.getId());
-            if (user.getEmail() != null && !user.getEmail().isBlank()) {
-                oldUser.setEmail(user.getEmail());
-            }
-            if (user.getLogin() != null && !user.getLogin().isBlank()) {
-                oldUser.setLogin(user.getLogin());
-            }
-            if (user.getName() != null && !user.getName().isBlank()) {
-                oldUser.setName(user.getName());
-            }
-            if (user.getBirthday() != null) {
-                oldUser.setBirthday(user.getBirthday());
-            }
-            log.info("update user {} - Finished", user);
-            return oldUser;
-        } else {
-            log.info("User with id = " + user.getId() + " not found");
-            throw new NotFoundException("User with id = " + user.getId() + " not found");
-        }
+    public User updateUser(@RequestBody User newUser) {
+        return userRepository.update(newUser);
     }
 
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userRepository.remove(userId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Set<User> getAllFriends(@PathVariable Long id) {
+        return userService.getAllFriends(id);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
 }
